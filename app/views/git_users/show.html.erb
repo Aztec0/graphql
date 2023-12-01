@@ -1,0 +1,14 @@
+<h1>User Information for <%= @git_login %></h1>
+
+<% if @user_data.present? %>
+  <p>Name: <%= @user_data["data"]["gitUser"]["name"] %></p>
+
+  <% if @user_data["data"]["gitUser"]["repos"].present? %>
+    <p>Repositories: <%= @user_data["data"]["gitUser"]["repos"].join(', ') %></p>
+  <% else %>
+    <p>No repositories available.</p>
+  <% end %>
+
+<% else %>
+  <p>No user information available.</p>
+<% end %>

@@ -2,30 +2,28 @@
 
 module Types
   class QueryType < Types::BaseObject
-    field :node, Types::NodeType, null: true, description: "Fetches an object given its ID." do
-      argument :id, ID, required: true, description: "ID of the object."
+    field :git_user, Types::GitUserType, null: true do
+      argument :git_login, String, required: true
     end
 
-    def node(id:)
-      context.schema.object_from_id(id, context)
-    end
+    def git_user(git_login:)
+      response_name = HTTParty.get("https://api.github.com/users/#{git_login}")
+      response_repos = HTTParty.get("https://api.github.com/users/#{git_login}/repos")
 
-    field :nodes, [Types::NodeType, null: true], null: true, description: "Fetches a list of objects given a list of IDs." do
-      argument :ids, [ID], required: true, description: "IDs of the objects."
-    end
+    
 
-    def nodes(ids:)
-      ids.map { |id| context.schema.object_from_id(id, context) }
-    end
+      if response_repos.success?
+        # Отримання масиву репозиторіїв з розкодованої відповіді JSON
+        repos_array = JSON.parse(response_repos.body)
+      
+        # Отримання масиву назв репозиторіїв
+        repo_names = repos_array.map { |repo| repo['name'] }
+      
+      else
+        puts "Failed to retrieve repositories. Status code: #{response_repos.code}"
+      end
 
-    # Add root-level fields here.
-    # They will be entry points for queries on your schema.
-
-    # TODO: remove me
-    field :test_field, String, null: false,
-      description: "An example field added by the generator"
-    def test_field
-      "Hello World!"
+      user_data = {name: response_name["name"], repos: repo_names}
     end
   end
 end

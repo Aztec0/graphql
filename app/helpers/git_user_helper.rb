@@ -1,0 +1,2 @@
+module GitUserHelper
+end

@@ -1,0 +1,7 @@
+<h1>GitHub User Information</h1>
+
+<%= form_tag('/git_users/show', method: 'post') do %>
+  <%= label_tag 'gitLogin', 'Enter GitHub Login:' %>
+  <%= text_field_tag 'gitLogin' %>
+  <%= submit_tag 'Get User Information' %>
+<% end %>
